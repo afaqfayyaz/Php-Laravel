@@ -1,0 +1,1 @@
+<h1>User Successfully subscribed</h1>
