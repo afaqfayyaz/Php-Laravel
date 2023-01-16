@@ -40,12 +40,11 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    
+
     //Admin middleware is call in the resource constructor
     Route::apiresource('category', CategoryController::class);
     Route::apiresource('product', ProductController::class);
 
-    //For order admin middleware is not applicable because it is mentained by user.
+    //For order admin middleware is not applicable because it is mentained by users.
     Route::apiresource('order', OrderController::class);
 });
-
