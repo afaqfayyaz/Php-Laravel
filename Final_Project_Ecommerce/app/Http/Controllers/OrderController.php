@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -17,9 +18,9 @@ class OrderController extends Controller
     {
         $order = Order::all();
         return response()->json([
-        "success" => true,
-        "message" => "Order List",
-        "data" => $order
+            "success" => true,
+            "message" => "Order List",
+            "data" => $order
         ]);
     }
 
@@ -43,21 +44,24 @@ class OrderController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'quantity'=>'required',
-            'product_is'=>'required',   
-            'user_id'=>'required'
+            'quantity' => 'required',
+            'product_id' => 'required',
+            'user_id' => 'required'
         ]);
 
-        if($validator->fails())
-        {
-            return $this->sendError('Validation Error.', $validator->errors());       
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" =>  $validator->errors()
+            ]);
         }
 
         $order = Order::create($input);
         return response()->json([
-        "success" => true,
-        "message" => "Order created successfully.",
-        "data" => $order
+            "success" => true,
+            "message" => "Order created successfully.",
+            "data" => $order
         ]);
     }
 
@@ -69,14 +73,14 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $product = Order::find($id);
-        if (is_null($product)) {
-        return $this->sendError('Order not found.');
+        $order = Order::find($id);
+        if (is_null($order)) {
+            return $this->sendError('Order not found.');
         }
         return response()->json([
-        "success" => true,
-        "message" => "Order retrieved successfully.",
-        "data" => $product
+            "success" => true,
+            "message" => "Order retrieved successfully.",
+            "data" => $order
         ]);
     }
 
@@ -100,29 +104,32 @@ class OrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $order = Order::find($id);
+
 
         $input = $request->all();
         $validator = Validator::make($input, [
-            'quantity'=>'required',
-            'product_id'=>'required',   
-            'user_id'=>'required'
+            'quantity' => 'required',
+            'product_id' => 'required',
+            'user_id' => 'required'
         ]);
 
-        if($validator->fails())
-        {
-            return $this->sendError('Validation Error.', $validator->errors());       
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" =>  $validator->errors()
+            ]);
         }
-
-        $order->quatity=$input['quantity'];
-        $order->quatity=$input['product_id'];
-        $order->quatity=$input['user_id'];
+        $order = Order::find($id);
+        $order->quantity = $input['quantity'];
+        $order->product_id = $input['product_id'];
+        $order->user_id = $input['user_id'];
         $order->save();
 
         return response()->json([
-        "success" => true,
-        "message" => "Order Updated successfully.",
-        "data" => $order
+            "success" => true,
+            "message" => "Order Updated successfully.",
+            "data" => $order
         ]);
     }
 
@@ -134,13 +141,12 @@ class OrderController extends Controller
      */
     public function destroy($id)
     {
-        $order= Order::find($id);
+        $order = Order::find($id);
         $order->delete();
         return response()->json([
-        "success" => true,
-        "message" => "Order deleted successfully.",
-        "data" => $order,
+            "success" => true,
+            "message" => "Order deleted successfully.",
+            "data" => $order,
         ]);
     }
 }
- 

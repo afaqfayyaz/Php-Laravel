@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['admin'], ['except' => ['index']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -16,10 +20,11 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
+
         return response()->json([
-        "success" => true,
-        "message" => "Product List",
-        "data" => $products
+            "success" => true,
+            "message" => "Product List",
+            "data" => $products
         ]);
     }
 
@@ -43,24 +48,31 @@ class ProductController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-        'name' => 'required',
-        'description' => 'required',
-        'quatity'=>'required',
-        'status'=>'required',
-        'price'=>'required',
-        'category_is'=>'required'
+            'name' => 'required',
+            'description' => 'required',
+            'quantity' => 'required',
+            'status' => 'required',
+            'price' => 'required',
+            'image' => 'required',
+            'category_id' => 'required'
         ]);
 
-        if($validator->fails())
-        {
-            return $this->sendError('Validation Error.', $validator->errors());       
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+        // Storing File Path in Database and File in Image Folder
+        if ($image = $request->file('image')) {
+            $destinationPath = 'image/';
+            $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
+            $image->move($destinationPath, $profileImage);
+            $input['image'] = "$profileImage";
         }
 
         $product = Product::create($input);
         return response()->json([
-        "success" => true,
-        "message" => "Product created successfully.",
-        "data" => $product
+            "success" => true,
+            "message" => "Product created successfully.",
+            "data" => $product
         ]);
     }
 
@@ -74,12 +86,12 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         if (is_null($product)) {
-        return $this->sendError('Product not found.');
+            return $this->sendError('Product not found.');
         }
         return response()->json([
-        "success" => true,
-        "message" => "Product retrieved successfully.",
-        "data" => $product
+            "success" => true,
+            "message" => "Product retrieved successfully.",
+            "data" => $product
         ]);
     }
 
@@ -103,33 +115,49 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $product=Product::find($id);
         $input = $request->all();
         $validator = Validator::make($input, [
             'name' => 'required',
             'description' => 'required',
-            'quatity'=>'required',
-            'status'=>'required',
-            'price'=>'required',
-            'image'=>'required',
-            'category_is'=>'required'
+            'quantity' => 'required',
+            'status' => 'required',
+            'price' => 'required',
+            'image' => 'required',
+            'category_id' => 'required'
         ]);
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" => $validator->errors()
+            ]);
         }
+
+        if ($image = $request->file('image')) {
+            $destinationPath = 'image/';
+            $profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
+            $image->move($destinationPath, $profileImage);
+            $input['image'] = "$profileImage";
+        } else {
+            unset($input['image']);
+        }
+        // Find Product and Update the Product.
+        $product = Product::find($id);
         $product->name = $input['name'];
         $product->description = $input['description'];
         $product->quatity = $input['quantity'];
         $product->status = $input['status'];
         $product->price = $input['price'];
         $product->image = $input['image'];
-        $product->category_id=$input['category_id'];
+        $product->category_id = $input['category_id'];
+
+
         $product->save();
 
         return response()->json([
-        "success" => true,
-        "message" => "Product updated successfully.",
-        "data" => $product
+            "success" => true,
+            "message" => "Product updated successfully.",
+            "data" => $product
         ]);
     }
 
@@ -141,12 +169,12 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product=Product::find($id);
+        $product = Product::find($id);
         $product->delete();
         return response()->json([
-        "success" => true,
-        "message" => "Product deleted successfully.",
-        "data" => $product
+            "success" => true,
+            "message" => "Product deleted successfully.",
+            "data" => $product
         ]);
     }
 }

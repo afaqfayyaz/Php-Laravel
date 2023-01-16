@@ -22,7 +22,8 @@ return new class extends Migration
             $table->double('price');
             $table->string('image');
             $table->foreignId('category_id');
-            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')
+                ->onDelete('cascade');;
             $table->timestamps();
         });
     }

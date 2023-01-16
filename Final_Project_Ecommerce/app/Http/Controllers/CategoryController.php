@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware(['admin'], ['except' => ['index']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,10 +22,17 @@ class CategoryController extends Controller
     public function index()
     {
         $category = Category::all();
+
+        if (is_null($category)) {
+            return response()->json([
+                "success" => false,
+                "message" => "Category not found.",
+            ]);
+        }
         return response()->json([
-        "success" => true,
-        "message" => "Category List",
-        "data" => $category
+            "success" => true,
+            "message" => "Category List",
+            "data" => $category
         ]);
     }
 
@@ -46,18 +58,22 @@ class CategoryController extends Controller
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-   
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" =>  $validator->errors()
+            ]);
         }
-        $input['slug'] = Str::slug($request->name,'-');
+        $input['slug'] = Str::slug($request->name, '-');
 
         $category = Category::create($input);
         return response()->json([
             "success" => true,
             "message" => "Category Stored successfully.",
             "data" => $category,
-            ]);
+        ]);
     }
 
     /**
@@ -70,12 +86,15 @@ class CategoryController extends Controller
     {
         $category = Category::find($id);
         if (is_null($category)) {
-        return $this->sendError('Category not found.');
+            return response()->json([
+                "success" => false,
+                "message" => "Category not found.",
+            ]);
         }
         return response()->json([
-        "success" => true,
-        "message" => "Category retrieved successfully..",
-        "data" => $category
+            "success" => true,
+            "message" => "Category retrieved successfully..",
+            "data" => $category
         ]);
     }
 
@@ -99,23 +118,27 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $category= Category::find($id);
+        $category = Category::find($id);
         $input = $request->all();
         $validator = Validator::make($input, [
             'name' => 'required',
         ]);
-   
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors());       
+
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" =>  $validator->errors()
+            ]);
         }
-        $category->name=$input['name'];
-        $category->slug=Str::slug($input['name'],'-');
+        $category->name = $input['name'];
+        $category->slug = Str::slug($input['name'], '-');
         $category->save();
         return response()->json([
             "success" => true,
             "message" => "Category Updated successfully.",
             "data" => $category,
-            ]);
+        ]);
     }
 
     /**
@@ -129,9 +152,9 @@ class CategoryController extends Controller
         $category = Category::find($id);
         $category->delete();
         return response()->json([
-        "success" => true,
-        "message" => "Category deleted successfully.",
-        "data" => $category,
+            "success" => true,
+            "message" => "Category deleted successfully.",
+            "data" => $category,
         ]);
     }
 }
