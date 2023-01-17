@@ -1,7 +1,7 @@
-## Laravel Ecommerce 
-# Introduction 
+# Laravel Ecommerce 
+## Introduction 
 It’s a REST API-based small eCommerce system that has categories, products, and orders. Each of them is implemented with proper relation it also has complete Authentification like email verification, password forgot, and reset using email. It also has Admin and user roles; users can only see and read the thing. user is unable to perform create delete and update. Unlike the user, the admin can do anything.
-# Features
+## Features
     User 
     Admin
     Factories & Seeder.
@@ -12,12 +12,12 @@ It’s a REST API-based small eCommerce system that has categories, products, an
     User can order the any product.
     Each category has different product.
 
-# Requirements
+## Requirements
 
     PHP = 8.0
     laravel = 9.0
 
-# Installation
+## Installation
     Make sure you already install the composer
     composer create-project rahulvijayam/ecommerce 
     Create database for your project with the name as ecommerce
