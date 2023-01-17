@@ -17,6 +17,12 @@ class OrderController extends Controller
     public function index()
     {
         $order = Order::all();
+        if (is_null($order)) {
+            return response()->json([
+                "success" => false,
+                "message" => "No Order Registered",
+            ]);
+        }
         return response()->json([
             "success" => true,
             "message" => "Order List",
@@ -75,7 +81,10 @@ class OrderController extends Controller
     {
         $order = Order::find($id);
         if (is_null($order)) {
-            return $this->sendError('Order not found.');
+            return response()->json([
+                "success" => false,
+                "message" => "Order not found.",
+            ]);
         }
         return response()->json([
             "success" => true,
@@ -142,6 +151,12 @@ class OrderController extends Controller
     public function destroy($id)
     {
         $order = Order::find($id);
+        if (is_null($order)) {
+            return response()->json([
+                "success" => false,
+                "message" => "Order not found.",
+            ]);
+        }
         $order->delete();
         return response()->json([
             "success" => true,

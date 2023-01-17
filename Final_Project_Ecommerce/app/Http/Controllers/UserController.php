@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Mail\VerifyEmail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    // This function register the user and send the verification email to the user with 6 digit pin.
+
     public function register(Request $request)
     {
         $validator = Validator::make(
@@ -26,7 +29,11 @@ class UserController extends Controller
             ]
         );
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" =>  $validator->errors()
+            ]);
         }
 
         $request['password'] = Hash::make($request['password']);
@@ -64,7 +71,7 @@ class UserController extends Controller
         );
     }
 
-
+    // This function take the passport auth token and the pin that send to the email and verify the user.
     public function verifyEmail(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -72,7 +79,11 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->with(['message' => $validator->errors()]);
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" =>  $validator->errors()
+            ]);
         }
         $select = DB::table('password_resets')
             ->where('email', Auth::user()->email)
@@ -114,7 +125,11 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response()->json([
+                "success" => false,
+                "message" => "Validation Error.",
+                "data" =>  $validator->errors()
+            ]);
         }
         $user = User::where('email', $request->email)->first();
 
@@ -132,8 +147,6 @@ class UserController extends Controller
             return response($response, 422);
         }
     }
-
-
 
     public function logout(Request $request)
     {

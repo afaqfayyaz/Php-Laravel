@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UpdatePasswordController extends Controller
 {
+    // This function update the current User password using Auth Token
     public function update(Request $request)
     {
         $input = $request->all();
@@ -22,7 +23,7 @@ class UpdatePasswordController extends Controller
             return response()->json([
                 "success" => false,
                 "message" => "Validation Failed.",
-                "body"=>$validator->errors(),
+                "body" => $validator->errors(),
             ]);
         }
 

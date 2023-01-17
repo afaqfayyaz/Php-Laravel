@@ -10,6 +10,7 @@ class ProductController extends Controller
 {
     public function __construct()
     {
+        // This Middleware is used to check the User is Admin or not.
         $this->middleware(['admin'], ['except' => ['index']]);
     }
     /**
@@ -19,12 +20,18 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $product = Product::all();
+        if (is_null($product)) {
+            return response()->json([
+                "success" => false,
+                "message" => 'No Product Registered.',
+            ]);
+        }
 
         return response()->json([
             "success" => true,
             "message" => "Product List",
-            "data" => $products
+            "data" => $product
         ]);
     }
 
@@ -86,7 +93,10 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
         if (is_null($product)) {
-            return $this->sendError('Product not found.');
+            return response()->json([
+                "success" => false,
+                "message" => 'Product not found.',
+            ]);
         }
         return response()->json([
             "success" => true,
@@ -170,6 +180,12 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::find($id);
+        if (is_null($product)) {
+            return response()->json([
+                "success" => false,
+                "message" => 'No Product found.',
+            ]);
+        }
         $product->delete();
         return response()->json([
             "success" => true,

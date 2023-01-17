@@ -41,10 +41,12 @@ Route::middleware('auth:api')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
 
-    //Admin middleware is call in the resource constructor
-    Route::apiresource('category', CategoryController::class);
-    Route::apiresource('product', ProductController::class);
+    /*Admin middleware is call in the resource constructor &
+     'verify.api' middleware is to check that user email is verified or not.*/
 
-    //For order admin middleware is not applicable because it is mentained by users.
-    Route::apiresource('order', OrderController::class);
+    Route::apiresource('category', CategoryController::class)->middleware('verify.api');
+    Route::apiresource('product', ProductController::class)->middleware('verify.api');
+
+    //For order admin middleware is not applicable because it is mentained by user.
+    Route::apiresource('order', OrderController::class)->middleware('verify.api');
 });

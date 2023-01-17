@@ -13,6 +13,9 @@ use App\Mail\ResetPassword;
 
 class ForgotPasswordController extends Controller
 {
+    /* First User hit this api url this function send user an 
+    email with a token and a link where they can change the password*/
+
     public function forgot(Request $request)
     {
         $request->validate([
@@ -36,21 +39,22 @@ class ForgotPasswordController extends Controller
         ]);
     }
 
+    //After hiting the Url that sent in the email this function open the Forgot password form field.
+
     public function forgotPasswordForm($token)
     {
         return view('ForgotPasswordForm', ['token' => $token]);
     }
 
+    //After submit the for this function triggers and change the password.
+
     public function reset(Request $request)
     {
-        $request->validate([
+        $validator = $request->validate([
             'email' => 'required|email|exists:users',
             'password' => 'required|string|min:6|confirmed',
             'password_confirmation' => 'required',
-
-
         ]);
-
         $updatePassword = DB::table('password_resets')
             ->where([
                 'email' => $request->email,

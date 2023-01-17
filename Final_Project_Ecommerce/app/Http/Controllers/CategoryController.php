@@ -12,6 +12,8 @@ class CategoryController extends Controller
 
     public function __construct()
     {
+        // Middleware to check the current user is admin or not.
+
         $this->middleware(['admin'], ['except' => ['index']]);
     }
     /**
@@ -150,6 +152,12 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::find($id);
+        if (is_null($category)) {
+            return response()->json([
+                "success" => false,
+                "message" => "Category not found.",
+            ]);
+        }
         $category->delete();
         return response()->json([
             "success" => true,
