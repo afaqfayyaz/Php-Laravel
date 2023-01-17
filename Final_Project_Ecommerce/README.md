@@ -30,10 +30,6 @@ It’s a REST API-based small eCommerce system that has categories, products, an
 
 ## License
 
-> Copyright (C) 2023 AfaqChohan.  
-[features]: #features
-[requirements]: #requirements
-[install]: #installation
-[license]: #license
+>Copyright (C) 2023 AfaqChohan.
 
     
