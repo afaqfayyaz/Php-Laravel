@@ -22,22 +22,21 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::post('/register', [UserController::class, 'register'])->name('register.api');
-Route::post('/login', [UserController::class, 'login'])->name('login.api');
-
-Route::middleware('auth:api')->group(function () {
-    Route::post('email/verify', [UserController::class, 'verifyEmail']);
-});
 
 Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout.api');
+    Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('delete.api');
+    Route::post('/updateuser/{id}', [UserController::class, 'updateUser'])->name('update.api');
+    Route::get('/show/{id}', [UserController::class, 'show'])->name('show.api');
+    Route::post('email/verify', [UserController::class, 'verifyEmail'])->name('verify.api');
+    Route::post('/update', [UpdatePasswordController::class, 'update'])->name('update.api');
 });
+
+Route::post('/register', [UserController::class, 'register'])->name('register.api');
+Route::post('/login', [UserController::class, 'login'])->name('login.api');
 Route::post('password/forget', [ForgotPasswordController::class, 'forgot'])->name('password.forget.api');
 Route::post('password/reset', [ForgotPasswordController::class, 'reset'])->name('password.reset.api');
 
-Route::middleware('auth:api')->group(function () {
-    Route::post('/update', [UpdatePasswordController::class, 'update'])->name('update.api');
-});
 
 Route::middleware('auth:api')->group(function () {
 

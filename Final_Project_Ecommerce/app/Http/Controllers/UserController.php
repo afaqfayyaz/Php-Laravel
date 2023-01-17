@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use PHPUnit\Framework\Constraint\IsTrue;
+use SebastianBergmann\Type\TrueType;
 
 class UserController extends Controller
 {
@@ -136,24 +138,72 @@ class UserController extends Controller
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('Laravel Password Grant Client')->accessToken;
-                $response = ['Result' => 'User Login SuccessFully', 'token' => $token];
-                return response($response, 200);
+                return response()->json([
+                    "success" => true,
+                    "message" => "User Login SuccessFully",
+                    "Token" => $token
+                ]);
             } else {
-                $response = ["message" => "Password Mis-Match"];
-                return response($response, 422);
+                return response()->json([
+                    "success" => false,
+                    "message" => "Password Mis-Match",
+                ]);
             }
         } else {
-            $response = ["message" => 'User does not exist'];
-            return response($response, 422);
+            return response()->json([
+                "success" => false,
+                "message" => "User does not exist",
+            ]);
         }
     }
 
+    public function updateUser(Request $request, $id)
+    {
+        $data = User::find($id);
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->update();
+        return response()->json([
+            "success" => true,
+            "message" => "User updated",
+            "body" => $data,
+        ]);
+    }
+    public function show($id)
+    {
+        $user = User::find($id);
+        if ($user) {
+            return response()->json([
+                "success" => true,
+                "message" => "User retrived successfully",
+                "body" => $user,
+            ]);
+        } else {
+            return response()->json([
+                "success" => false,
+                "message" => "User not found",
+            ]);
+        }
+    }
+
+
     public function logout(Request $request)
     {
-
         $token = $request->user()->token();
         $token->revoke();
-        $response = ['message' => 'You have been successfully logged out!'];
-        return response($response, 200);
+        return response()->json([
+            "success" => true,
+            "message" => "You have been successfully logged out!",
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $user = User::find($id);
+        $user->delete();
+        return response()->json([
+            "success" => true,
+            "message" => "User Successfully deleted",
+        ]);
     }
 }

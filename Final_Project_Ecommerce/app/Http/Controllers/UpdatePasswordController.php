@@ -36,7 +36,12 @@ class UpdatePasswordController extends Controller
                 "success" => true,
                 "message" => "Password Updated successfully."
             ]);
+
             Auth::logout();
         }
+        return response()->json([
+            "success" => false,
+            "message" => "Password Mis-Match."
+        ]);
     }
 }
